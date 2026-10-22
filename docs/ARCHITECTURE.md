@@ -63,6 +63,9 @@ The pinned @root/acme distribution needs a compatibility fix: after finalization
 processing orders are polled at the order URL with an empty POST-as-GET. The
 same patch skips already-valid authorizations and disables maintainer registration. scripts/patch-acme.ts verifies
 original and modified SHA-256 hashes; upstream changes fail until reviewed.
+scripts/patch-asn1.ts also preserves raw BIT STRING bytes in verbose parser trees,
+including EC public points that happen to parse as nested ASN.1. Compact parser
+output remains unchanged. Both patches verify original and modified hashes.
 Modified upstream files remain MPL-2.0. Complete matching modified sources,
 licenses and the patch script accompany releases. Certlivo files remain Apache-2.0.
 

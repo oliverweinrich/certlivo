@@ -19,9 +19,9 @@ Uncommitted lines and missing history are identified explicitly.
 
 | Dependency              | Configured version / pin                           | Last pin change          | Source                         | Dependabot / maintenance     |
 | ----------------------- | -------------------------------------------------- | ------------------------ | ------------------------------ | ---------------------------- |
-| oliverweinrich/certlivo | 1.0.0                                              | Unknown (no Git history) | `examples/compose.api.yaml`    | Excluded; release-managed    |
+| oliverweinrich/certlivo | 1.0.1                                              | Unknown (no Git history) | `examples/compose.api.yaml`    | Excluded; release-managed    |
 | ${API_IMAGE             | ?Set the image of your API listening on port 3000} | Unknown (no Git history) | `examples/compose.api.yaml`    | Yes (docker-compose; weekly) |
-| oliverweinrich/certlivo | 1.0.0                                              | Unknown (no Git history) | `examples/compose.routes.yaml` | Excluded; release-managed    |
+| oliverweinrich/certlivo | 1.0.1                                              | Unknown (no Git history) | `examples/compose.routes.yaml` | Excluded; release-managed    |
 | nginx                   | 1.31.7-alpine                                      | Unknown (no Git history) | `examples/compose.routes.yaml` | Yes (docker-compose; weekly) |
 | ${API_IMAGE             | ?Set the image of your API listening on port 3000} | Unknown (no Git history) | `examples/compose.routes.yaml` | Yes (docker-compose; weekly) |
 

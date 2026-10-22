@@ -14,7 +14,7 @@
     "dependencies:report": "node .github/dependencies.ts --offline --output reports/dependencies.md",
     "test:tooling": "node --test tests/tooling/**/*.test.ts",
     "dockerhub:preview": "node .github/dockerhub.ts --output reports/dockerhub-overview.md",
-    "build": "node scripts/patch-acme.ts && tsc -p tsconfig.json",
+    "build": "node scripts/patch-acme.ts && node scripts/patch-asn1.ts && tsc -p tsconfig.json",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc -p tsconfig.tools.json",
     "lint": "eslint src scripts release tests .github --ext .ts",
     "test": "npm run build && npm run test:app && npm run test:tooling",
@@ -48,7 +48,7 @@
   "lint-staged": {
     "*.{js,cjs,mjs,jsx,ts,tsx,json,jsonc,yml,yaml,md,mdx,css,scss,html}": "prettier --write --ignore-unknown"
   },
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "dependencies": {
     "@root/acme": "3.1.0",

@@ -7,7 +7,7 @@ with automatic HTTPS per host. Own code is licensed under Apache-2.0.
 ```yaml
 services:
   certlivo:
-    image: oliverweinrich/certlivo:1.0.0
+    image: oliverweinrich/certlivo:1.0.1
     restart: unless-stopped
     ports:
       - '80:80'

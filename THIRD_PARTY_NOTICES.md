@@ -16,6 +16,9 @@ files accompany the release. Native npm addons require separate source review.
 The @root packages are MPL-2.0 JavaScript source modules. Certlivo modifies
 @root/acme to poll finalized orders correctly, skip already-valid
 authorizations and disable maintainer registration. The modifications retain MPL-2.0 and are identified in the file.
+Certlivo also modifies @root/asn1 to preserve raw primitive bytes in verbose
+parser trees when EC public-key bytes also resemble nested ASN.1 structures.
+This compatibility fix retains MPL-2.0 and is identified in the modified file.
 Their complete installed source files and MPL texts are included in the matching
 source archive under npm/node_modules and in the -sources image. Certlivo
 application files remain separately licensed under Apache-2.0.
