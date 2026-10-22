@@ -1,0 +1,39 @@
+version: 2
+updates:
+  - package-ecosystem: docker
+    directories:
+      - /image
+      - /.github/scanner
+      - /tests/integration/ca
+      - /release
+    schedule:
+      interval: weekly
+      day: monday
+      time: 06:00
+      timezone: Europe/Berlin
+    groups:
+      docker-images:
+        patterns:
+          - '*'
+  - package-ecosystem: docker-compose
+    directory: /examples
+    schedule:
+      interval: weekly
+    ignore:
+      - dependency-name: oliverweinrich/certlivo
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns:
+          - '*'
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      development-tools:
+        patterns:
+          - '*'

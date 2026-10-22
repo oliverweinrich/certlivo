@@ -1,0 +1,58 @@
+{
+  "name": "certlivo",
+  "private": true,
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "prepare": "husky",
+    "format": "prettier --write . --ignore-unknown",
+    "format:check": "prettier --check . --ignore-unknown",
+    "format:staged": "lint-staged",
+    "dependencies": "node .github/dependencies.ts --write && prettier --write DEPENDENCIES.md",
+    "dependencies:report": "node .github/dependencies.ts --offline --output reports/dependencies.md",
+    "test:tooling": "node --test tests/tooling/**/*.test.ts",
+    "dockerhub:preview": "node .github/dockerhub.ts --output reports/dockerhub-overview.md",
+    "build": "node scripts/patch-acme.ts && tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc -p tsconfig.tools.json",
+    "lint": "eslint src scripts release tests .github --ext .ts",
+    "test": "npm run build && npm run test:app && npm run test:tooling",
+    "test:integration": "node tests/integration/integration.ts",
+    "release:prepare": "node release/prepare.ts",
+    "release:check": "node release/check.ts",
+    "release:publish": "node release/publish.ts",
+    "version:set": "node release/set-version.ts",
+    "scan": "node scripts/scan.ts",
+    "sbom": "node scripts/sbom.ts",
+    "lint:app": "eslint src",
+    "test:app": "tsc -p tsconfig.tests.json && node --test .test-dist/tests/unit/**/*.test.js",
+    "clean": "node scripts/clean.ts",
+    "legal:stage": "node scripts/stage-legal.ts"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@peculiar/x509": "2.0.0",
+    "@types/node": "24.10.0",
+    "@types/tar-stream": "3.1.5",
+    "eslint": "10.13.0",
+    "husky": "9.1.7",
+    "lint-staged": "17.6.0",
+    "prettier": "3.9.10",
+    "reflect-metadata": "0.2.2",
+    "tar-stream": "3.2.2",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.72.0",
+    "yaml": "2.9.1"
+  },
+  "lint-staged": {
+    "*.{js,cjs,mjs,jsx,ts,tsx,json,jsonc,yml,yaml,md,mdx,css,scss,html}": "prettier --write --ignore-unknown"
+  },
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "@root/acme": "3.1.0",
+    "@root/csr": "0.8.1",
+    "httpxy": "0.5.5"
+  }
+}

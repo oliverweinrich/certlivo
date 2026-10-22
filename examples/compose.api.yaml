@@ -1,0 +1,19 @@
+services:
+  certlivo:
+    image: oliverweinrich/certlivo:1.0.0
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+    environment:
+      ACME_EMAIL: admin@example.com
+      ACME_AGREE_TOS: 'true'
+      MAX_BODY_SIZE: '10m'
+      ROUTES_JSON: |-
+        [
+          {"host":"api.example.com","path":"/","target":"http://api:3000","tls":true}
+        ]
+
+  api:
+    image: ${API_IMAGE:?Set the image of your API listening on port 3000}
+    restart: unless-stopped

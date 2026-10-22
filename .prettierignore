@@ -1,0 +1,29 @@
+# Generated files and local state
+node_modules/
+.husky/_/
+release-output/
+candidate/
+release-cache/
+reports/
+data/
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Preserve canonical license texts and third-party notices
+LICENSE
+NOTICE
+THIRD_PARTY_NOTICES.md
+build/legal/
+
+# Generated release-specific inventory, mirrored byte-for-byte into the image
+docs/DEPENDENCY_LICENSES.md
+
+dist/
+
+.test-dist/
+build/
+licenses/
