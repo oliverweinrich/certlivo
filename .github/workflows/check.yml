@@ -1,0 +1,100 @@
+name: Checks and dependency monitoring
+on:
+  pull_request: null
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: 17 5 * * 1
+  workflow_dispatch: null
+permissions:
+  contents: read
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  check:
+    name: Check (${{ matrix.arch }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            arch: amd64
+          - runner: ubuntu-24.04-arm
+            arch: arm64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Check formatting and development dependencies
+        run: |-
+          npm ci --ignore-scripts --no-audit
+          node scripts/ci.ts validate
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+        with:
+          driver: docker
+      - name: Prepare maintenance reports
+        run: node scripts/ci.ts host
+      - name: Build with fresh Alpine packages
+        id: build
+        run: docker buildx build --pull --no-cache-filter runtime --load --build-arg VERSION="$(cat VERSION)" -t certlivo:ci -f image/Dockerfile .
+      - name: Build and scan source collection dependencies
+        run: |-
+          docker build --pull --no-cache -f release/Source.Dockerfile -t certlivo:source-helper-check .
+          node scripts/ci.ts helper-inventory
+          npm run dependencies:report
+          node scripts/scan.ts certlivo:source-helper-check
+        env:
+          CERTLIVO_SCAN_REPORT: ${{ github.workspace }}/reports/trivy-source-helper.json
+      - name: Test release output permissions
+        run: node tests/tooling/release/test-permissions.ts certlivo:source-helper-check
+      - name: Compare installed packages with the published image
+        run: node scripts/ci.ts compare-packages
+      - name: Test HTTP, ACME renewal and restart behavior
+        env:
+          CERTLIVO_TEST_IMAGE: certlivo:ci
+        run: npm run test:integration
+      - name: Scan for known vulnerabilities
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/scan.ts certlivo:ci
+      - name: Upload maintenance reports
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: maintenance-${{ matrix.arch }}
+          path: reports/
+          if-no-files-found: warn
+          retention-days: 14
+  notify:
+    name: Update maintenance issue
+    needs: check
+    if: ${{ !cancelled() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      actions: read
+      issues: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: maintenance-*
+          path: reports
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          CHECK_RESULT: ${{ needs.check.result }}
+        with:
+          script: |-
+            const { notify } = await import('file://' + process.cwd() + '/.github/maintenance-issue.ts');
+            await notify({ github, context, result: process.env.CHECK_RESULT });

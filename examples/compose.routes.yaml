@@ -1,0 +1,34 @@
+services:
+  certlivo:
+    image: oliverweinrich/certlivo:1.0.0
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+    environment:
+      ACME_EMAIL: admin@example.com
+      ACME_AGREE_TOS: 'true'
+      ROUTES_JSON: |-
+        [
+          {"host":"example.com","path":"/","target":"file:///sites/website","tls":true},
+          {"host":"example.com","path":"/api","target":"http://api:3000","tls":true},
+          {"host":"legacy.example.com","path":"/","target":"http://website:80","tls":false}
+        ]
+    volumes:
+      - ./website:/sites/website:ro
+    # Optional: retain accounts and certificates when the container is replaced.
+    # Add to volumes above: certificates:/data
+
+  website:
+    image: nginx:1.31.7-alpine
+    restart: unless-stopped
+    # Alternatively serve another site through a separate HTTP container.
+    # volumes:
+    #   - ./website:/usr/share/nginx/html:ro
+
+  api:
+    image: ${API_IMAGE:?Set the image of your API listening on port 3000}
+    restart: unless-stopped
+
+# volumes:
+#   certificates:
