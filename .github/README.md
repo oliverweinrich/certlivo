@@ -66,7 +66,7 @@ Downloads are cached by recipe commit or Node version and verified again on use.
 Prepared output, private state and approvals are never cached. Node runtime and
 source-helper image declarations are pinned independently. Sources include exact
 Alpine build inputs, complete upstream Node sources and production npm source
-files, including the documented MPL compatibility patch. Publication refuses
+files, including the documented MPL compatibility patches. Publication refuses
 missing evidence. Source availability must outlive temporary Actions artifacts.
 
 `npm run dockerhub:preview` renders the actual versioned examples with commit-pinned

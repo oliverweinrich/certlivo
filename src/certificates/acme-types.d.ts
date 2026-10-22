@@ -66,6 +66,11 @@ declare module '@root/acme' {
 }
 declare module '@root/csr' {
   import type { JsonWebKey } from 'node:crypto';
+  export function _info(der: string): Readonly<{
+    subject: string;
+    altnames: readonly string[];
+    jwk: JsonWebKey;
+  }>;
   export function csr(
     options: Readonly<{
       jwk: JsonWebKey;
@@ -73,4 +78,14 @@ declare module '@root/csr' {
       encoding: 'pem';
     }>,
   ): Promise<string>;
+}
+
+declare module '@root/asn1/parser.js' {
+  export function parse(
+    options: Readonly<{
+      der: Uint8Array;
+      verbose?: boolean;
+      json?: boolean;
+    }>,
+  ): unknown;
 }

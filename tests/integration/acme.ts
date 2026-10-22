@@ -106,9 +106,15 @@ export const exerciseAcme = async (
       'wss://api.test',
     ]).stdout,
   );
-  docker(['exec', secure, 'certlivo', 'renew']);
-  await waitFor(() => fingerprint(secure, fixtures) !== first);
-  const second = fingerprint(secure, fixtures);
+  const renewals = Number(process.env.CERTLIVO_TEST_RENEWALS || '3');
+  if (!Number.isSafeInteger(renewals) || renewals < 1 || renewals > 50)
+    throw new Error('CERTLIVO_TEST_RENEWALS must be between 1 and 50');
+  let second = first;
+  for (let attempt = 0; attempt < renewals; attempt++) {
+    docker(['exec', secure, 'certlivo', 'renew']);
+    await waitFor(() => fingerprint(secure, fixtures) !== second);
+    second = fingerprint(secure, fixtures);
+  }
   out('HTTP-01, HTTPS and certificate renewal passed');
   docker(['rm', '-f', secure]);
   docker([

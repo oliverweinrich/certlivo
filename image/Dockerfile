@@ -6,7 +6,7 @@ COPY package.json package-lock.json ./
 RUN npm ci --ignore-scripts --no-audit --no-fund
 COPY tsconfig.json tsconfig.tests.json eslint.config.mjs ./
 COPY src/ ./src/
-COPY scripts/patch-acme.ts scripts/stage-legal.ts scripts/lib.ts ./scripts/
+COPY scripts/patch-acme.ts scripts/patch-asn1.ts scripts/stage-legal.ts scripts/lib.ts ./scripts/
 COPY tests/unit/ ./tests/unit/
 COPY licenses/ ./licenses/
 COPY LICENSE NOTICE THIRD_PARTY_NOTICES.md ./

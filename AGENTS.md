@@ -60,7 +60,8 @@ git diff --check
 
 Run actionlint after workflow changes. Test both architectures on native runners.
 Integration tests use disposable containers, networks, volumes and test-only CA
-trust. Never use production ACME, live certificate volumes or public reporting
+trust. They force three renewals by default. CERTLIVO_TEST_RENEWALS accepts 1..50
+for stress runs; CERTLIVO_TEST_AUTHZ_REUSE=0 disables authorization reuse in Pebble. Never use production ACME, live certificate volumes or public reporting
 channels for test credentials. All fixtures must clean up after success and failure.
 
 ## Runtime invariants
@@ -75,7 +76,7 @@ symlinks and directory listings in mounted sites.
 Use the ACME/CSR library and native TLS/crypto rather than implementing these
 protocols. Preserve bounded retries, atomic snapshots, host/key/validity checks
 and served-fingerprint verification. Review the hash-pinned MPL compatibility
-patch when updating ACME. The HTTPS transport permits only the issuer origin.
+patches when updating ACME or ASN.1. The HTTPS transport permits only the issuer origin.
 The Node process retains a flock descriptor for exclusive /data ownership.
 CLI health/status/renew use a private Unix socket, never a public admin port.
 
