@@ -3,6 +3,7 @@
 import { request as httpRequest } from 'node:http';
 import { request as httpsRequest } from 'node:https';
 import { readFileSync } from 'node:fs';
+import { uploadBody } from './upload.ts';
 export type Reply = Readonly<{
   status: number;
   headers: Record<string, string | string[] | undefined>;
@@ -27,6 +28,7 @@ export const request = (
       headers['Content-Length'] = String(Buffer.byteLength(body));
     const transport = secure ? httpsRequest : httpRequest;
     let responseStatus = 0;
+    const upload = new AbortController();
     const operation = transport(
       url,
       {
@@ -41,6 +43,8 @@ export const request = (
       },
       (response) => {
         responseStatus = response.statusCode || 0;
+        upload.abort();
+        if (!operation.writableEnded && !operation.destroyed) operation.end();
         const chunks: Buffer[] = [];
         response.on('data', (chunk: Buffer) => chunks.push(chunk));
         response.once('error', reject);
@@ -56,7 +60,7 @@ export const request = (
     operation.once('timeout', () =>
       operation.destroy(new Error('Fixture request timeout')),
     );
-    operation.on('error', (error: Error): void => {
+    const fail = (error: Error): void => {
       // A peer may reject an upload before it finishes. Require the complete
       // response below; transport failures without a response still reject.
       if (
@@ -74,11 +78,15 @@ export const request = (
           { cause: error },
         ),
       );
-    });
-    if (Array.isArray(body)) {
-      for (const chunk of body) operation.write(chunk);
-      operation.end();
-    } else operation.end(body);
+    };
+    operation.on('error', fail);
+    void uploadBody(operation, body, upload.signal).catch(
+      (error: unknown): void => {
+        fail(
+          error instanceof Error ? error : new Error('Fixture upload failed'),
+        );
+      },
+    );
   });
 export const record = (text: string): Record<string, unknown> => {
   const value: unknown = JSON.parse(text);

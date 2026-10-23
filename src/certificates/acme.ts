@@ -11,9 +11,11 @@ import { createTransport } from './transport.js';
 
 export type Challenges = Map<string, string>;
 const generateKey = (): string =>
-  generateKeyPairSync('ec', { namedCurve: 'prime256v1' })
-    .privateKey.export({ format: 'pem', type: 'pkcs8' })
-    .toString();
+  generateKeyPairSync('ec', {
+    namedCurve: 'prime256v1',
+    publicKeyEncoding: { format: 'pem', type: 'spki' },
+    privateKeyEncoding: { format: 'pem', type: 'pkcs8' },
+  }).privateKey;
 export const issueCertificate = async (
   config: Config,
   root: string,

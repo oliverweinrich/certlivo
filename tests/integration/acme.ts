@@ -88,7 +88,12 @@ export const exerciseAcme = async (
   startGateway(secure, network, routes, fixtures, { volume, acme: true });
   await waitFor(() => ready(secure), 90);
   const first = fingerprint(secure, fixtures);
-  for (const file of ['probe.ts', 'redirect-probe.ts', 'probe-static.ts'])
+  for (const file of [
+    'probe.ts',
+    'probe-upload.ts',
+    'redirect-probe.ts',
+    'probe-static.ts',
+  ])
     out(
       probe(secure, fixtures, [
         '/tests/' + file,

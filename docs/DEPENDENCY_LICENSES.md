@@ -3,7 +3,7 @@
 Generated from the prepared runtime inventory. This is a technical coverage
 report, not a legal opinion. Re-run release preparation after package changes.
 
-18 package/version records; 11 source origins; both target architectures.
+19 package/version records; 11 source origins; both target architectures.
 
 Matching verified recipes, patches, upstream archives and complete copyright/license
 evidence accompany the release and image. Sources are published before executables.
@@ -19,6 +19,7 @@ evidence accompany the release and image. Sources are published before executabl
 | busybox-binsh | 1.37.0-r31 | GPL-2.0-only | busybox / `c3ef5d10e6ef6528852c51f0564963e2f8c1be19` | aarch64, x86_64 |
 | ca-certificates-bundle | 20261020-r0 | MPL-2.0 AND MIT | ca-certificates / `e78f5987166c6ffbe23f6472e2e8f040298fe2da` | aarch64, x86_64 |
 | libapk | 3.0.8-r0 | GPL-2.0-only | apk-tools / `4588b452722bd4800efdc6cce4f6e980e02a997f` | aarch64, x86_64 |
+| libatomic | 15.2.0-r5 | GPL-2.0-or-later AND LGPL-2.1-or-later | gcc / `423a8ad043d07f2c7546c8ec3e2b0384cda360ae` | aarch64, x86_64 |
 | libcrypto3 | 3.5.9-r0 | Apache-2.0 | openssl / `29b9ec24b1b5b39aeef51fa2a044210e2ec5258e` | aarch64, x86_64 |
 | libgcc | 15.2.0-r5 | GPL-2.0-or-later AND LGPL-2.1-or-later | gcc / `423a8ad043d07f2c7546c8ec3e2b0384cda360ae` | aarch64, x86_64 |
 | libssl3 | 3.5.9-r0 | Apache-2.0 | openssl / `29b9ec24b1b5b39aeef51fa2a044210e2ec5258e` | aarch64, x86_64 |
@@ -31,7 +32,8 @@ evidence accompany the release and image. Sources are published before executabl
 
 ## Node.js runtime
 
-Node.js v24.21.0: checksum-verified complete upstream sources and bundled notices.
+Node.js v26.12.0. Release preparation verifies the complete upstream source
+archive and bundled notices against both runtime images.
 The Node notices are also shipped as node-LICENSE.txt.
 
 ## Production npm dependencies
