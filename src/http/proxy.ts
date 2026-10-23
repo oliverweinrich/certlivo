@@ -7,6 +7,7 @@ import { Transform } from 'node:stream';
 import type { TransformCallback } from 'node:stream';
 import type { Config, Route } from '../config/index.js';
 import { reply } from './response.js';
+import { rejectUpload } from './reject-upload.js';
 
 const hopHeaders = [
   'connection',
@@ -60,6 +61,7 @@ export const createProxy = (
   ) => Promise<void>;
 } => {
   const outgoing = new WeakMap<IncomingMessage, ClientRequest>();
+  const rejected = new WeakSet<IncomingMessage>();
   const proxy = createProxyServer({
     secure: true,
     prependPath: false,
@@ -70,6 +72,10 @@ export const createProxy = (
     ssl: { maxHeaderSize: config.upstreamSize },
   });
   proxy.on('proxyReq', (upstream, request): void => {
+    if (rejected.has(request)) {
+      upstream.destroy();
+      return;
+    }
     outgoing.set(request, upstream);
     const timer = setTimeout((): void => {
       upstream.destroy(new Error('Upstream connect timeout'));
@@ -94,8 +100,7 @@ export const createProxy = (
   ): Promise<void> => {
     const length = Number(request.headers['content-length'] || 0);
     if (length > config.bodySize) {
-      response.setHeader('Connection', 'close');
-      reply(response, 413);
+      rejectUpload(request, response);
       return;
     }
     prepareHeaders(request, secure, false);
@@ -115,15 +120,14 @@ export const createProxy = (
       },
     });
     body.once('error', (): void => {
+      rejected.add(request);
       request.unpipe(body);
-      request.resume();
       outgoing.get(request)?.destroy();
       if (response.headersSent) {
         response.destroy();
         return;
       }
-      response.setHeader('Connection', 'close');
-      reply(response, 413);
+      rejectUpload(request, response);
     });
     request.pipe(body);
     try {
@@ -132,7 +136,7 @@ export const createProxy = (
         buffer: body,
       });
     } catch {
-      reply(response, 502);
+      if (!rejected.has(request)) reply(response, 502);
     }
   };
   const upgrade = async (

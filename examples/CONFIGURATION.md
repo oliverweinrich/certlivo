@@ -17,6 +17,9 @@ No Docker socket is needed.
 | `LOG_LEVEL`                   | info                                    | `debug`, `info`, `warn`, `error`                                 |
 
 Sizes use positive integer `k` or `m` units. No unlimited size setting.
+Oversized proxy uploads receive 413 immediately. Pending input is discarded
+for at most one second before the connection closes; it is not buffered or
+forwarded after rejection.
 Unknown route fields and invalid/missing TLS booleans are rejected. Retired
 `DOMAINS`, `SITE_MODE`, `UPSTREAM_URL` and `SITES_JSON` are rejected.
 

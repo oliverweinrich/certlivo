@@ -75,7 +75,7 @@ export const integration = async (): Promise<void> => {
     ];
     startGateway(plain, network, routes, fixtures);
     await waitFor(() => ready(plain));
-    for (const file of ['probe.ts', 'probe-static.ts'])
+    for (const file of ['probe.ts', 'probe-upload.ts', 'probe-static.ts'])
       out(
         probe(plain, fixtures, ['/tests/' + file, 'http://plain.test']).stdout,
       );
