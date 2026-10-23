@@ -12,7 +12,8 @@ generation and archive tooling are devDependencies. There are no npm workspaces
 or nested project manifests. Runtime modules live in src/, tools in scripts/,
 release/, .github/ and tests/. All own executable logic is TypeScript.
 
-The gateway is compiled into dist/. Node 24 executes tooling TypeScript directly;
+The gateway is compiled into dist/ and runs on the pinned Node 26 image.
+Node 24 executes development and CI tooling TypeScript directly;
 strict typechecks cover both groups. Runtime unit tests mirror src/ under
 tests/unit/ and compile separately into .test-dist/ using tsconfig.tests.json.
 Tooling tests live in tests/tooling/; Docker/Pebble fixtures live in tests/integration/. Named module APIs, bounded file size and

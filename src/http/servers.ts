@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 import { createServer as createHttpServer } from 'node:http';
 import { createServer as createHttpsServer } from 'node:https';
-import type { Server } from 'node:http';
+import type { IncomingMessage, Server } from 'node:http';
+import type { Duplex } from 'node:stream';
 import { Socket } from 'node:net';
 import type { Certificates } from '../certificates/index.js';
 import type { Config } from '../config/index.js';
@@ -48,35 +49,38 @@ export const startServers = async (
     [https, true],
   ] as const) {
     server.setTimeout(60000);
-    server.on('clientError', (_error, socket): void => {
+    server.on('clientError', (_error: Error, socket: Duplex): void => {
       socket.end('HTTP/1.1 400 Bad Request\r\nConnection: close\r\n\r\n');
     });
-    server.on('connect', (_request, socket): void => {
+    server.on('connect', (_request: IncomingMessage, socket: Duplex): void => {
       socket.end(
         'HTTP/1.1 405 Method Not Allowed\r\nConnection: close\r\n\r\n',
       );
     });
-    server.on('upgrade', (request, socket, head): void => {
-      try {
-        if (!(socket instanceof Socket)) {
+    server.on(
+      'upgrade',
+      (request: IncomingMessage, socket: Duplex, head: Buffer): void => {
+        try {
+          if (!(socket instanceof Socket)) {
+            socket.destroy();
+            return;
+          }
+          const { route } = gateway.route(request);
+          if (
+            !route ||
+            route.kind !== 'proxy' ||
+            route.tls !== secure ||
+            String(request.headers.upgrade).toLowerCase() !== 'websocket'
+          ) {
+            socket.destroy();
+            return;
+          }
+          void gateway.proxy.upgrade(route, request, socket, head, secure);
+        } catch {
           socket.destroy();
-          return;
         }
-        const { route } = gateway.route(request);
-        if (
-          !route ||
-          route.kind !== 'proxy' ||
-          route.tls !== secure ||
-          String(request.headers.upgrade).toLowerCase() !== 'websocket'
-        ) {
-          socket.destroy();
-          return;
-        }
-        void gateway.proxy.upgrade(route, request, socket, head, secure);
-      } catch {
-        socket.destroy();
-      }
-    });
+      },
+    );
   }
   const sockets = new Set<Socket>();
   for (const server of [http, https])
