@@ -5,6 +5,12 @@ package-lock.json covers both runtime and development dependencies. Alpine
 packages resolve during refreshed builds and need scheduled scans. No automatic
 merge is configured; merging never publishes an image.
 
+TypeScript versions >=6.1.0 are temporarily excluded from Dependabot updates:
+typescript-eslint 8.72.0 supports >=4.8.4 <6.1.0. Revisit this limit when the lint
+tooling supports newer compilers. Other dependency updates remain enabled.
+Keep peer-dependency checks active rather than bypassing them with --force or
+--legacy-peer-deps.
+
 ## Repository setup
 
 Enable Actions, Issues, Dependabot alerts/security updates and private vulnerability
