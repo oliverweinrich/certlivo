@@ -1,6 +1,6 @@
 # Copyright 2026 Oliver Weinrich
 # SPDX-License-Identifier: Apache-2.0
-FROM --platform=$BUILDPLATFORM node:24.21.0-alpine@sha256:ebfe2f90462722a7a4de65e91990e97fe0d401c70e0e762c5b53302f905ec1c1 AS build
+FROM --platform=$BUILDPLATFORM node:26.12.0-alpine@sha256:6f08a523443ddedf52941874c203475b0ad503e859ad70cb26ab8be9a517dbd5 AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --ignore-scripts --no-audit --no-fund
@@ -18,7 +18,7 @@ COPY scripts/npm-notices.ts scripts/lib.ts ./scripts/
 RUN npm prune --omit=dev --ignore-scripts --no-audit --no-fund \
     && node scripts/npm-notices.ts /app /legal/npm
 
-FROM node:24.21.0-alpine@sha256:ebfe2f90462722a7a4de65e91990e97fe0d401c70e0e762c5b53302f905ec1c1 AS runtime
+FROM node:26.12.0-alpine@sha256:6f08a523443ddedf52941874c203475b0ad503e859ad70cb26ab8be9a517dbd5 AS runtime
 RUN apk upgrade --no-cache \
     && addgroup -g 10001 certlivo && adduser -D -H -u 10001 -G certlivo certlivo \
     && mkdir -p /data && chown 10001:10001 /data \
