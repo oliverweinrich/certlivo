@@ -1,6 +1,6 @@
 services:
   certlivo:
-    image: oliverweinrich/certlivo:1.0.1
+    image: oliverweinrich/certlivo:1.0.2
     restart: unless-stopped
     ports:
       - '80:80'

@@ -48,7 +48,7 @@
   "lint-staged": {
     "*.{js,cjs,mjs,jsx,ts,tsx,json,jsonc,yml,yaml,md,mdx,css,scss,html}": "prettier --write --ignore-unknown"
   },
-  "version": "1.0.1",
+  "version": "1.0.2",
   "type": "module",
   "dependencies": {
     "@root/acme": "3.1.0",
